@@ -1,0 +1,114 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ReaderControls from "../components/ReaderControls.astro";
+import type { Section } from "../lib/types";
+import sectionsData from "../generated/sections.json";
+
+const sections = sectionsData as Section[];
+const mainSections = sections.filter(({ id }) => id.startsWith("part-"));
+const chapterCount = mainSections.reduce(
+  (count, section) => count + section.chapters.length,
+  0
+);
+---
+
+<BaseLayout>
+  <header class="landing-header">
+    <a class="header-brand" href="/">
+      <span class="header-mark">重</span>
+      <span>
+        <strong>重新定义口吃</strong>
+        <small>中文完整译本</small>
+      </span>
+    </a>
+    <ReaderControls />
+  </header>
+
+  <main class="landing-main">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">John C. Harrison · 2011 Edition</p>
+        <h1>重新定义口吃</h1>
+        <p class="hero-subtitle">言语挣扎的真正本质</p>
+        <p class="hero-description">
+          从言语、情绪、感知、信念、意图与生理反应出发，重新理解慢性口吃这套彼此关联的系统。
+        </p>
+        <div class="hero-actions">
+          <a class="primary-button" href="/chapters/front-matter/">开始阅读</a>
+          <a class="secondary-button" href="#contents">浏览目录</a>
+        </div>
+        <dl class="book-stats">
+          <div>
+            <dt>{chapterCount}</dt>
+            <dd>篇正文</dd>
+          </div>
+          <div>
+            <dt>8</dt>
+            <dd>个部分</dd>
+          </div>
+          <div>
+            <dt>完整</dt>
+            <dd>中文译本</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="book-cover" aria-hidden="true">
+        <div class="cover-rule"></div>
+        <p>REDEFINING</p>
+        <h2>STUTTERING</h2>
+        <span>重新定义口吃</span>
+        <small>A GUIDE TO RECOVERY</small>
+      </div>
+    </section>
+
+    <section id="contents" class="contents-section">
+      <div class="section-intro">
+        <p class="eyebrow">Contents</p>
+        <h2>全书目录</h2>
+        <p>从书前内容开始，或直接选择你关心的部分。</p>
+      </div>
+
+      <div class="front-links">
+        <a href="/chapters/front-matter/">
+          <span>书前内容</span>
+          <small>前言、序言与完整目录</small>
+        </a>
+        <a href="/chapters/glossary/">
+          <span>译名与术语表</span>
+          <small>全书统一术语</small>
+        </a>
+      </div>
+
+      <div class="part-grid">
+        {mainSections.map((section, index) => (
+          <article class="part-card">
+            <span class="part-index">{String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <h3>{section.title}</h3>
+              <p>{section.description}</p>
+              <a href={section.chapters[0].href}>
+                阅读本部分
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <p>非官方中文译本，仅供非商业阅读与研究。</p>
+    <p>Unofficial Chinese translation for non-commercial reading and research purposes only.</p>
+    <p>原著：John C. Harrison，《Redefining Stuttering》（2011）</p>
+    <p>
+      <a
+        href="https://www.mcguireprogramme.com/wp-content/uploads/Redefining-Stuttering-2011.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        阅读英文原版 PDF
+      </a>
+    </p>
+  </footer>
+</BaseLayout>

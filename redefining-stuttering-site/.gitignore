@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+src/generated/
+public/book-images/
+.DS_Store
+*.log

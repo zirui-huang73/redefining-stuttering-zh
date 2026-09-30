@@ -1,0 +1,32 @@
+---
+import type { Chapter } from "../lib/types";
+
+interface Props {
+  previous?: Chapter;
+  next?: Chapter;
+}
+
+const { previous, next } = Astro.props;
+---
+
+<nav class="chapter-nav" aria-label="前后章节">
+  {previous ? (
+    <a class="chapter-nav-link previous" href={previous.href}>
+      <span>上一篇</span>
+      <strong>{previous.title}</strong>
+    </a>
+  ) : (
+    <span></span>
+  )}
+  {next ? (
+    <a class="chapter-nav-link next" href={next.href}>
+      <span>下一篇</span>
+      <strong>{next.title}</strong>
+    </a>
+  ) : (
+    <a class="chapter-nav-link next" href="/">
+      <span>阅读完成</span>
+      <strong>返回全书目录</strong>
+    </a>
+  )}
+</nav>

@@ -1,0 +1,47 @@
+---
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import BookLayout from "../../layouts/BookLayout.astro";
+import { renderMarkdown } from "../../lib/render-markdown";
+import type { Chapter, Section } from "../../lib/types";
+import chaptersData from "../../generated/chapters.json";
+import sectionsData from "../../generated/sections.json";
+
+export function getStaticPaths() {
+  return (chaptersData as Chapter[]).map((chapter) => ({
+    params: { slug: chapter.slug },
+    props: { chapter }
+  }));
+}
+
+interface Props {
+  chapter: Chapter;
+}
+
+const { chapter } = Astro.props as Props;
+const chapters = chaptersData as Chapter[];
+const sections = sectionsData as Section[];
+const currentIndex = chapters.findIndex(({ slug }) => slug === chapter.slug);
+const previous = currentIndex > 0 ? chapters[currentIndex - 1] : undefined;
+const next =
+  currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : undefined;
+const contentPath = path.join(
+  process.cwd(),
+  "src",
+  "generated",
+  "content",
+  chapter.contentFile
+);
+const markdown = readFileSync(contentPath, "utf8");
+const { html, headings } = renderMarkdown(markdown);
+---
+
+<BookLayout
+  chapter={chapter}
+  sections={sections}
+  previous={previous}
+  next={next}
+  headings={headings}
+>
+  <article class="book-content" set:html={html} />
+</BookLayout>

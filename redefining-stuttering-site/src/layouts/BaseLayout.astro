@@ -1,0 +1,120 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "《重新定义口吃》中文译本",
+  description = "约翰·C. 哈里森《重新定义口吃》中文在线阅读版"
+} = Astro.props;
+
+const fullTitle =
+  title === "《重新定义口吃》中文译本"
+    ? title
+    : `${title}｜《重新定义口吃》`;
+---
+
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-font-size="medium">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f4efe5" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{fullTitle}</title>
+    <script is:inline>
+      (() => {
+        try {
+          const storedTheme = localStorage.getItem("reader-theme");
+          const storedSize = localStorage.getItem("reader-font-size");
+          const theme =
+            storedTheme === "light" || storedTheme === "dark"
+              ? storedTheme
+              : matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          const size = ["small", "medium", "large"].includes(storedSize)
+            ? storedSize
+            : "medium";
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.dataset.fontSize = size;
+        } catch {
+          // The readable light theme remains the no-storage fallback.
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const body = document.body;
+        const themeToggle = document.querySelector("[data-theme-toggle]");
+        const menuToggle = document.querySelector("[data-menu-toggle]");
+        const menuClose = document.querySelector("[data-menu-close]");
+        const menuOverlay = document.querySelector("[data-menu-overlay]");
+
+        const syncControls = () => {
+          const dark = root.dataset.theme === "dark";
+          themeToggle?.setAttribute("aria-pressed", String(dark));
+          themeToggle?.setAttribute(
+            "aria-label",
+            dark ? "切换到浅色模式" : "切换到深色模式"
+          );
+          document
+            .querySelectorAll("button[data-font-size]")
+            .forEach((button) =>
+              button.setAttribute(
+                "aria-pressed",
+                String(button.dataset.fontSize === root.dataset.fontSize)
+              )
+            );
+        };
+
+        themeToggle?.addEventListener("click", () => {
+          root.dataset.theme =
+            root.dataset.theme === "dark" ? "light" : "dark";
+          localStorage.setItem("reader-theme", root.dataset.theme);
+          syncControls();
+        });
+
+        document.querySelectorAll("button[data-font-size]").forEach((button) => {
+          button.addEventListener("click", () => {
+            root.dataset.fontSize = button.dataset.fontSize;
+            localStorage.setItem(
+              "reader-font-size",
+              root.dataset.fontSize
+            );
+            syncControls();
+          });
+        });
+
+        const setMenu = (open) => {
+          body.classList.toggle("nav-open", open);
+          menuToggle?.setAttribute("aria-expanded", String(open));
+          if (open) menuClose?.focus();
+        };
+
+        menuToggle?.addEventListener("click", () => setMenu(true));
+        menuClose?.addEventListener("click", () => setMenu(false));
+        menuOverlay?.addEventListener("click", () => setMenu(false));
+        document
+          .querySelectorAll(".book-sidebar a")
+          .forEach((link) =>
+            link.addEventListener("click", () => setMenu(false))
+          );
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") setMenu(false);
+        });
+
+        syncControls();
+      })();
+    </script>
+  </body>
+</html>

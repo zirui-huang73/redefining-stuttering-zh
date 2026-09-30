@@ -1,0 +1,62 @@
+---
+import type { Section } from "../lib/types";
+
+interface Props {
+  sections: Section[];
+  currentSlug?: string;
+}
+
+const { sections, currentSlug } = Astro.props;
+---
+
+<div class="sidebar-inner">
+  <div class="sidebar-heading">
+    <div>
+      <span class="eyebrow">完整中文译本</span>
+      <a class="sidebar-book-title" href="/">重新定义口吃</a>
+    </div>
+    <button
+      class="sidebar-close"
+      type="button"
+      data-menu-close
+      aria-label="关闭章节目录"
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+
+  <nav aria-label="章节目录">
+    <p class="sidebar-nav-label">章节目录</p>
+    {sections.map((section) => {
+      const active = section.chapters.some(({ slug }) => slug === currentSlug);
+      return (
+        <details class="section-group" open={active || !currentSlug}>
+          <summary>
+            <span>{section.title}</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="m6 8 4 4 4-4"></path>
+            </svg>
+          </summary>
+          <ul>
+            {section.chapters.map((chapter) => (
+              <li>
+                <a
+                  href={chapter.href}
+                  class:list={{ active: chapter.slug === currentSlug }}
+                  aria-current={chapter.slug === currentSlug ? "page" : undefined}
+                >
+                  {chapter.number !== null && (
+                    <span class="chapter-number">
+                      {String(chapter.number).padStart(2, "0")}
+                    </span>
+                  )}
+                  <span>{chapter.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      );
+    })}
+  </nav>
+</div>

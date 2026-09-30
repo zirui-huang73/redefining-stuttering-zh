@@ -1,0 +1,30 @@
+---
+import type { PageHeading } from "../lib/types";
+
+interface Props {
+  headings: PageHeading[];
+}
+
+const { headings } = Astro.props;
+const MAX_TOC_ITEMS = 28;
+const visibleHeadings = headings.slice(0, MAX_TOC_ITEMS);
+const hiddenHeadingCount = headings.length - visibleHeadings.length;
+---
+
+{headings.length > 1 && (
+  <nav class="on-this-page" aria-label="本页目录">
+    <p>本页目录</p>
+    <ol>
+      {visibleHeadings.map((heading) => (
+        <li class:list={{ nested: heading.depth === 3 }}>
+          <a href={`#${heading.slug}`}>{heading.text}</a>
+        </li>
+      ))}
+    </ol>
+    {hiddenHeadingCount > 0 && (
+      <a class="toc-more" href="#main-content">
+        还有 {hiddenHeadingCount} 个小节，请在正文中继续阅读
+      </a>
+    )}
+  </nav>
+)}

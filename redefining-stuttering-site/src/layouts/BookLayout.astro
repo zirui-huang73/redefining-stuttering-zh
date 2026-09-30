@@ -1,0 +1,94 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import BookSidebar from "../components/BookSidebar.astro";
+import ChapterNav from "../components/ChapterNav.astro";
+import OnThisPage from "../components/OnThisPage.astro";
+import ReaderControls from "../components/ReaderControls.astro";
+import type { Chapter, PageHeading, Section } from "../lib/types";
+
+interface Props {
+  chapter: Chapter;
+  sections: Section[];
+  previous?: Chapter;
+  next?: Chapter;
+  headings: PageHeading[];
+}
+
+const { chapter, sections, previous, next, headings } = Astro.props;
+---
+
+<BaseLayout
+  title={chapter.title}
+  description={`约翰·C. 哈里森《重新定义口吃》中文译本：${chapter.title}`}
+>
+  <a class="skip-link" href="#main-content">跳到正文</a>
+
+  <header class="site-header">
+    <button
+      class="menu-toggle"
+      type="button"
+      data-menu-toggle
+      aria-controls="book-sidebar"
+      aria-expanded="false"
+      aria-label="打开章节目录"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+    </button>
+    <a class="header-brand" href="/">
+      <span class="header-mark">重</span>
+      <span>
+        <strong>重新定义口吃</strong>
+        <small>中文完整译本</small>
+      </span>
+    </a>
+    <ReaderControls />
+  </header>
+
+  <div class="reading-shell">
+    <aside id="book-sidebar" class="book-sidebar">
+      <BookSidebar sections={sections} currentSlug={chapter.slug} />
+    </aside>
+    <button
+      class="menu-overlay"
+      type="button"
+      data-menu-overlay
+      aria-label="关闭章节目录"
+    ></button>
+
+    <main id="main-content" class="reading-main">
+      <div class="chapter-meta">
+        <span>{chapter.sectionTitle}</span>
+        <span aria-hidden="true">·</span>
+        <span>约 {chapter.readingMinutes} 分钟</span>
+        {chapter.sourcePages && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span>{chapter.sourcePages}</span>
+          </>
+        )}
+      </div>
+      <slot />
+      <ChapterNav previous={previous} next={next} />
+      <footer class="book-footer">
+        <p>非官方中文译本，仅供非商业阅读与研究。</p>
+        <p>Unofficial Chinese translation for non-commercial reading and research purposes only.</p>
+        <p>原著：John C. Harrison，《Redefining Stuttering》（2011）</p>
+        <p>
+          <a
+            href="https://www.mcguireprogramme.com/wp-content/uploads/Redefining-Stuttering-2011.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            阅读英文原版 PDF
+          </a>
+        </p>
+      </footer>
+    </main>
+
+    <aside class="toc-rail">
+      <OnThisPage headings={headings} />
+    </aside>
+  </div>
+</BaseLayout>
