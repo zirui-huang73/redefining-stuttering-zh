@@ -41,7 +41,7 @@ npm test
 
 `npm test` 会执行生产构建，并确认首页、404 页面、67 个阅读页面及书中图片全部生成。
 
-## 免费部署到 Cloudflare Pages
+## 免费部署到 Cloudflare
 
 建议把 `Redefining-Stuttering-zh` 整个目录作为 Git 仓库上传。网站项目需要读取上一级目录中的译稿，因此不要只上传 `redefining-stuttering-site` 子目录。
 
@@ -67,9 +67,17 @@ npm test
    dist
    ```
 
-6. 将 Node.js 版本设为 `22`，然后部署。
+6. 将 Node.js 版本设为 `24`，然后部署。
 
 Cloudflare Pages 免费套餐足以托管本网站。以后只需修改译稿并推送到 Git，Cloudflare 就会自动重新构建。
+
+如果 Cloudflare 项目要求填写 **Deploy command**，使用：
+
+```text
+npx wrangler deploy --config wrangler.jsonc
+```
+
+`wrangler.jsonc` 已明确指定只上传构建完成的 `dist/` 静态资源，避免 Wrangler 将网站自动改造成服务端渲染项目。
 
 也可以先在本地构建，再使用 Wrangler 直接上传：
 
@@ -94,4 +102,4 @@ npx wrangler pages deploy dist
 
 ## 发布说明
 
-网站页脚标注“经授权公开发布”。正式上线前，请确认仓库公开范围和授权文字符合实际授权条件。
+网站页脚标注本项目是“非官方中文译本，仅供非商业阅读与研究”，并提供英文原版链接。该说明不等同于取得翻译或公开传播授权，正式上线前请自行评估相关权利与风险。
